@@ -1,0 +1,22 @@
+{
+	"manifest_version": 3,
+	"name": "NoTrump Extension",
+	"version": "1.0",
+	"description": "Logs all article elements on every page.",
+	"permissions": ["tabs", "scripting", "activeTab"],
+	"action": {
+		"default_popup": "popup.html"
+	},
+	"content_scripts": [
+		{
+			"js": ["scripts/content.js"],
+			"matches": ["https://www.reddit.com/*"]
+		}
+	],
+	"web_accessible_resources": [
+		{
+			"resources": ["images/image.png"],
+			"matches": ["<all_urls>"]
+		}
+	]
+}

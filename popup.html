@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>NoTrump Extension</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				padding: 10px;
+			}
+			button {
+				padding: 10px;
+				font-size: 16px;
+			}
+		</style>
+		<script src="scripts/popup.js"></script>
+	</head>
+	<body>
+		<h1>NoTrump Extension</h1>
+		<label>
+			<input
+				type="radio"
+				name="action"
+				value="Replace"
+				id="replaceRadio"
+				checked
+			/>
+			Replace
+		</label>
+		<label>
+			<input
+				type="radio"
+				name="action"
+				value="Delete"
+				id="deleteRadio"
+			/>
+			Delete
+		</label>
+		<input
+			type="hidden"
+			id="toggleState"
+			value="Replace"
+		/>
+		<!-- Remove the settings section -->
+	</body>
+</html>
