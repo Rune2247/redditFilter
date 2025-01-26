@@ -1,7 +1,8 @@
 // Default settings
 const defaultSettings = {
-	action: "replace" // 'replace' or 'delete'
-}
+	action: "replace", // 'replace' or 'delete'
+	filterWords: ""
+};
 
 function setReplaceState(state) {
 	if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync) {
@@ -13,21 +14,22 @@ function setReplaceState(state) {
 
 const getToggleState = (callback) => {
 	if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync) {
-		chrome.storage.sync.get(["toggleState"], (result) => {
+		chrome.storage.sync.get(["toggleState", "filterWords"], (result) => {
 			const state = result.toggleState || defaultSettings.action;
-			callback(state);
+			const filterWords = result.filterWords || defaultSettings.filterWords;
+			callback(state, filterWords);
 		});
 	} else {
 		const state = localStorage.getItem("toggleState") || defaultSettings.action;
-		callback(state);
+		const filterWords = localStorage.getItem("filterWords") || defaultSettings.filterWords;
+		callback(state, filterWords);
 	}
-}
+};
 
-getToggleState((state) => {
-	console.log(state);
+getToggleState((state, filterWords) => {
 	// Initial processing of existing articles
 	const initialArticles = document.querySelectorAll("article");
-	processArticles(initialArticles);
+	processArticles(initialArticles, filterWords);
 
 	// Set up a MutationObserver to monitor changes in the DOM
 	const observer = new MutationObserver((mutations) => {
@@ -37,7 +39,7 @@ getToggleState((state) => {
 					const newArticles =
 						node.tagName === "ARTICLE" ? [node] : node.querySelectorAll("article");
 					if (newArticles.length) {
-						processArticles(newArticles);
+						processArticles(newArticles, filterWords);
 					}
 				}
 			});
@@ -53,36 +55,34 @@ getToggleState((state) => {
 		newArticles.forEach((article) => {
 			article.setAttribute("data-processed", "true");
 		});
-		processArticles(newArticles);
+		processArticles(newArticles, filterWords);
 	}, 5000);
 });
 
 // Function to process articles
-function processArticles(articles) {
+function processArticles(articles, filterWords) {
+	if (!filterWords.trim()) return;
+
+	const filters = filterWords.split(",").map(word => word.trim().toLowerCase());
 	articles.forEach((article) => {
-		console.log("Processing article:", article);
 		const aspectRatioTag = article.querySelector("shreddit-aspect-ratio");
 
-		// Check if the article contains the word "Trump" (case-insensitive)
-		if (article.textContent.toLowerCase().includes("trump")) {
+		// Check if the article contains any of the filter words (case-insensitive)
+		const articleText = article.textContent.toLowerCase();
+		const containsFilterWord = filters.some(filter => articleText.includes(filter));
+		if (containsFilterWord) {
 			getToggleState((state) => {
 				if (state.toLowerCase() === "delete") {
 					article.remove();
 					return;
 				}
-				console.log("The article contains the word 'Trump':", article);
 				if (aspectRatioTag) {
-					console.log("Aspect ratio tag found:", aspectRatioTag);
 					const img = document.createElement("img");
 					const imgSrc = chrome.runtime.getURL("images/image.png");
-					console.log("Image source URL:", imgSrc);
 					img.src = imgSrc;
-					img.onload = () => console.log("Image loaded successfully");
-					img.onerror = (e) => console.error("Error loading image", e, imgSrc);
+					img.onload = () => {};
+					img.onerror = (e) => {};
 					aspectRatioTag.replaceWith(img);
-					console.log("Image replaced:", img);
-				} else {
-					console.log("Aspect ratio tag not found in article:", article);
 				}
 
 				// Find and replace images in elements with class "block w-100 h-100"
@@ -93,15 +93,11 @@ function processArticles(articles) {
 						parentLink.replaceWith(img);
 					}
 					const imgSrc = chrome.runtime.getURL("images/image.png");
-					console.log("Image source URL:", imgSrc);
 					img.src = imgSrc;
-					img.onload = () => console.log("Image loaded successfully");
-					img.onerror = (e) => console.error("Error loading image", e, imgSrc);
-					console.log("Image replaced:", img);
+					img.onload = () => {};
+					img.onerror = (e) => {};
 				});
 			});
 		}
-
-		console.log("Finished processing article:", article);
 	});
 }
