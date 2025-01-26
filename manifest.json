@@ -3,7 +3,7 @@
 	"name": "NoTrump Extension",
 	"version": "1.0",
 	"description": "Logs all article elements on every page.",
-	"permissions": ["tabs", "scripting", "activeTab"],
+	"permissions": ["tabs", "scripting", "activeTab", "storage"],
 	"action": {
 		"default_popup": "popup.html"
 	},
