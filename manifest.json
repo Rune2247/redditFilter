@@ -3,7 +3,7 @@
 	"name": "Reddit filter Extension",
 	"version": "1.0",
 	"description": "This extension filters out posts from a reddit",
-	"permissions": ["tabs", "scripting", "activeTab", "storage"],
+	"permissions": ["scripting", "storage"],
 	"action": {
 		"default_popup": "popup.html"
 	},
