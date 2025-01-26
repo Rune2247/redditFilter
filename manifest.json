@@ -12,7 +12,6 @@
 		"48": "icons/icon48.png",
 		"128": "icons/icon128.png"
 	},
-
 	"content_scripts": [
 		{
 			"js": ["scripts/content.js"],
@@ -21,7 +20,7 @@
 	],
 	"web_accessible_resources": [
 		{
-			"resources": ["images/image.png"],
+			"resources": ["images/*"],
 			"matches": ["https://www.reddit.com/*"]
 		}
 	]

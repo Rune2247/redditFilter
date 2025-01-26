@@ -1,6 +1,15 @@
+const alternativeContentArray = [
+	{ title: "Cool truck", image: "images/truck.png", auther: "Mother Trucker" },
+	{
+		title: "Fine kitten",
+		image: "images/kitten.png",
+		auther: "Cat Guy"
+	}
+]
+
 // Default settings
 const defaultSettings = {
-	action: "replace", // 'replace' or 'delete'
+	action: "delete", // 'replace' or 'delete'
 	filterWords: "",
 	hideAuthors: false // New setting for hiding authors
 }
@@ -15,16 +24,21 @@ function setReplaceState(state) {
 
 const getToggleState = (callback) => {
 	if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync) {
-		chrome.storage.sync.get(["toggleState", "filterWords", "hideAuthors"], (result) => {
-			const state = result.toggleState || defaultSettings.action
-			const filterWords = result.filterWords || defaultSettings.filterWords
-			const hideAuthors = result.hideAuthors || defaultSettings.hideAuthors
-			callback(state, filterWords, hideAuthors)
-		})
+		chrome.storage.sync.get(
+			["toggleState", "filterWords", "hideAuthors"],
+			(result) => {
+				const state = result.toggleState || defaultSettings.action
+				const filterWords = result.filterWords || defaultSettings.filterWords
+				const hideAuthors = result.hideAuthors || defaultSettings.hideAuthors
+				callback(state, filterWords, hideAuthors)
+			}
+		)
 	} else {
 		const state = localStorage.getItem("toggleState") || defaultSettings.action
-		const filterWords = localStorage.getItem("filterWords") || defaultSettings.filterWords
-		const hideAuthors = localStorage.getItem("hideAuthors") || defaultSettings.hideAuthors
+		const filterWords =
+			localStorage.getItem("filterWords") || defaultSettings.filterWords
+		const hideAuthors =
+			localStorage.getItem("hideAuthors") || defaultSettings.hideAuthors
 		callback(state, filterWords, hideAuthors)
 	}
 }
@@ -66,6 +80,12 @@ getToggleState((state, filterWords, hideAuthors) => {
 	}, 5000)
 })
 
+// Function to get random alternative content
+function getRandomAlternativeContent() {
+	const randomIndex = Math.floor(Math.random() * alternativeContentArray.length)
+	return alternativeContentArray[randomIndex]
+}
+
 // Function to process articles
 function processArticles(articles, filterWords, hideAuthors) {
 	if (!filterWords.trim()) return
@@ -87,10 +107,12 @@ function processArticles(articles, filterWords, hideAuthors) {
 					article.remove()
 					return
 				}
+
+				const alternativeContent = getRandomAlternativeContent()
+
 				if (aspectRatioTag) {
 					const img = document.createElement("img")
-					const imgSrc = chrome.runtime.getURL("images/image.png")
-					img.src = imgSrc
+					img.src = chrome.runtime.getURL(alternativeContent.image)
 					img.onload = () => {}
 					img.onerror = (e) => {}
 					aspectRatioTag.replaceWith(img)
@@ -103,18 +125,17 @@ function processArticles(articles, filterWords, hideAuthors) {
 					if (parentLink) {
 						parentLink.replaceWith(img)
 					}
-					const imgSrc = chrome.runtime.getURL("images/image.png")
-					img.src = imgSrc
+					img.src = chrome.runtime.getURL(alternativeContent.image)
 					img.onload = () => {}
 					img.onerror = (e) => {}
 				})
 
-				// Replace the second <a> tag's text with "cute kitten"
+				// Replace the second <a> tag's text with the alternative title
 				const links = article.querySelectorAll("a")
 				if (links.length > 1) {
-					links[2].textContent = "cute kitten" // Place holder for now!
+					links[2].textContent = alternativeContent.title
 					if (hideAuthors) {
-						links[1].textContent = "No one interesting"
+						links[1].textContent = alternativeContent.auther
 					}
 				}
 			})

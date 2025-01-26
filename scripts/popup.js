@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 	if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync) {
 		chrome.storage.sync.get(["toggleState", "filterWords", "hideAuthors"], (result) => {
-			const storedState = result.toggleState || "Replace";
+			const storedState = result.toggleState || "Delete";
 			const storedFilter = result.filterWords || "";
 			const storedHideAuthors = result.hideAuthors || false;
 			document.querySelector(`input[name="action"][value="${storedState}"]`).checked = true;
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			toggleHideAuthorsCheckbox(storedState);
 		});
 	} else {
-		const storedState = localStorage.getItem("toggleState") || "Replace";
+		const storedState = localStorage.getItem("toggleState") || "Delete";
 		const storedFilter = localStorage.getItem("filterWords") || "";
 		const storedHideAuthors = localStorage.getItem("hideAuthors") || false;
 		document.querySelector(`input[name="action"][value="${storedState}"]`).checked = true;
@@ -51,11 +51,11 @@ document.querySelector('input[name="hideAuthors"]').addEventListener("change", f
 function getToggleState(callback) {
 	if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync) {
 		chrome.storage.sync.get(["toggleState"], (result) => {
-			const state = result.toggleState || "Replace";
+			const state = result.toggleState || "Delete";
 			callback(state);
 		});
 	} else {
-		const state = localStorage.getItem("toggleState") || "Replace";
+		const state = localStorage.getItem("toggleState") || "Delete";
 		callback(state);
 	}
 }
