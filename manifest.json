@@ -1,8 +1,8 @@
 {
 	"manifest_version": 3,
-	"name": "NoTrump Extension",
+	"name": "Reddit filter Extension",
 	"version": "1.0",
-	"description": "Logs all article elements on every page.",
+	"description": "This extension filters out posts from a reddit",
 	"permissions": ["tabs", "scripting", "activeTab", "storage"],
 	"action": {
 		"default_popup": "popup.html"
